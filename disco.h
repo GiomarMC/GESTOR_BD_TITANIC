@@ -1,7 +1,11 @@
 #ifndef DISCO_H
 #define DISCO_H
-#include <math.h>
-#include "lista.h"
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <map>
 
 const int bytes = 1024;
 
@@ -17,7 +21,7 @@ class Disco
         void agregarEspacio(int);
         bool espacioSuficiente() const;
         int obtenerEspacioRestante() const;
-        void calcularEspacioLista();
+        void leerDatos(const std::string&);
 };
 
 #endif

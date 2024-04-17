@@ -4,6 +4,6 @@
 int main()
 {
     Disco* myDisk;
-    myDisk->calcularEspacioLista();
+    myDisk->leerDatos("Titanic control 2024 - Hoja 1.csv");
     return 0;
 }
