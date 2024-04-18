@@ -1,9 +1,10 @@
-#include "disco.h"
 #include <iostream>
+#include "filemanager.h"
 
 int main()
 {
-    Disco* myDisk;
-    myDisk->leerDatos("Titanic control 2024 - Hoja 1.csv");
+    FileManager fileManager;
+    fileManager.selectCsvFile();
+    fileManager.displayColumnTypes();
     return 0;
 }

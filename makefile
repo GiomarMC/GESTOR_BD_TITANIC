@@ -1,5 +1,5 @@
-programa: main.o disco.o lista.o pasajeros.o
-	g++ -o programa main.o disco.o lista.o pasajeros.o
+programa: main.o disco.o lista.o pasajeros.o filemanager.o
+	g++ -o programa main.o disco.o lista.o pasajeros.o filemanager.o
 	./programa
 
 main.o: main.cpp disco.h
@@ -13,6 +13,9 @@ pasajeros.o: pasajeros.cpp pasajeros.h
 
 lista.o: lista.cpp lista.h pasajeros.h
 	g++ -c lista.cpp
+
+filemanager.o: filemanager.cpp filemanager.h
+	g++ -c filemanager.cpp
 
 clean:
 	rm -f *.o programa

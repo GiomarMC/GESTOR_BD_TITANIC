@@ -22,92 +22,45 @@ int Disco::obtenerEspacioRestante() const
     return discoBytes - espacioOcupado;
 }
 
-void Disco::leerDatos(const std::string& file)
+void Disco::leerDatos()
 {
-    std::ifstream archivo(file);
-    if (!archivo.is_open())
+    std::vector<std::string> csvFiles;
+    for(const auto& entry: std::filesystem::directory_iterator("."))
     {
-        std::cerr << "Error al abrir el archivo" << std::endl;
-        return;
+        if(entry.path().extension() == ".csv")
+        {
+            csvFiles.push_back(entry.path().string());
+        }
     }
-    
-    std::string linea;
-    std::string cabecera;
-    std::getline(archivo, linea);
-    std::stringstream ss(linea);
-    std::string database;
-    std::vector<std::string> campos;
 
-    std::cout << "Nombre de la base de datos >> ";
-    std::cin >> database;
-
-    std::ofstream db(database + ".txt");
-
-    if(!db.is_open())
+    if(csvFiles.empty())
     {
-        std::cerr << "Error al abrir el archivo" << database <<std::endl;
+        std::cout << "No se encontraron archivos CSV en el directorio actual." << std::endl;
         return;
     }
 
-    while(std::getline(ss, cabecera, ','))
+    int opcion;
+
+    do
     {
-        campos.push_back(cabecera);
-    }
-
-    db << "Data columns (total " << campos.size() << " columns):\n";
-
-    std::map<std::string, std::string> columnTypes;
-    for(const auto& campo : campos)
-    {
-        std::string tipo;
-        std::cout << "Tipo de dato para " << campo << " >> ";
-        std::cin >> tipo;
-        columnTypes[campo] = tipo;
-    }
-
-    for(const auto& pair : columnTypes)
-    {
-        db << pair.first << "\t" << pair.second << "\n";
-    }
-
-    campos.clear();
-
-    while(std::getline(archivo, linea))
-    {
-        std::stringstream palabra(linea);
-        std::string valor;
-        std::string nombreCompleto;
-
-        while(std::getline(palabra, valor, ','))
+        std::cout << "Archivos CSV encontrados: " << std::endl;
+        for (size_t i = 0; i < csvFiles.size(); i++)
         {
-            if(valor[0] == '"')
-            {
-                valor.erase(0,1);
-                nombreCompleto = valor;
-            }
-            else if(valor[valor.size() - 1] == '"')
-            {
-                valor.erase(valor.size() - 1);
-                nombreCompleto += valor;
-                campos.push_back(nombreCompleto);
-                nombreCompleto.clear();
-            }
-            else
-                campos.push_back(valor);
+            std::cout << i + 1 << ". " << csvFiles[i] << std::endl;
         }
 
-        if(campos.size() < 12)
-        {
-            std::cerr << "Numero insuficiente de campos en la linea." << std::endl;
-            return;
-        }
+        std::cout << "0. Salir" << std::endl;
+        std::cout << "Seleccione un archivo CSV o 0 para salir >> ";
+        std::cin >> opcion;
 
-        for(int i = 0; i < campos.size(); i++)
+        if(opcion < 0 || opcion > csvFiles.size())
         {
-            std::cout << campos[i] << "\t";
+            std::cerr << "Opción inválida, ingrese el valor nuevamente" << std::endl;
         }
-        std::cout << std::endl;
-    }
-
-    archivo.close();
+        else if(opcion > 0)
+        {
+            std::string filename = csvFiles[opcion - 1];
+            std::cout << "Trabajando con dataset >> " << filename << std::endl;
+        }
+    } while(opcion < 0 || opcion > csvFiles.size());
 }
