@@ -18,7 +18,8 @@ class FileManager
         FileManager();
         void displayCsvFiles() const;
         void selectCsvFile();
-        void mapColumnTypes(const std::string&);
+        void readColumnTypes(const std::string&);
+        void assingColumnTypes(const std::vector<std::string>&);
         void displayColumnTypes() const;
 };
 

@@ -44,12 +44,12 @@ void FileManager::selectCsvFile()
         }
         else if(opcion > 0)
         {
-            mapColumnTypes(csvFiles[opcion - 1]);
+            readColumnTypes(csvFiles[opcion - 1]);
         }
     } while(opcion != 0);
 }
 
-void FileManager::mapColumnTypes(const std::string& filename)
+void FileManager::readColumnTypes(const std::string& filename)
 {
     std::ifstream file(filename);
     if(!file.is_open())
@@ -58,26 +58,62 @@ void FileManager::mapColumnTypes(const std::string& filename)
     }
 
     std::string line;
+    std::vector<std::string> columns;
     if(std::getline(file, line))
     {
         std::istringstream iss(line);
         std::string column;
         while(std::getline(iss, column, ','))
         {
-            std::string type;
-            std::cout << "Ingrese el tipo de dato para la columna " << column << " >> ";
-            std::getline(std::cin,type);
-            columnType[filename][column] = type;
-            std::cin.clear();
+            if(!column.empty() && column.back() == '\n')
+            {
+                column.pop_back();
+            }
+            columns.push_back(column);
         }
     }
     else
     {
         std::cerr << "El dataset esta vacio" << std::endl;
     }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     file.close();
+
+    std::cout << "Columnas encontradas: " << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
+
+    for(int i = 0; i < columns.size(); i++)
+    {
+        std::cout << i << ". " << columns[i] << std::endl;
+    }
+
+    std::cout << "---------------------------------------------" << std::endl;
+
+    for(const auto& str: columns)
+    {
+        if(!str.empty() && str.back() == '\n')
+            continue;
+        std::cout << str << "  " << str.size() << std::endl;
+    }
+
+    assingColumnTypes(columns);
+}
+
+void FileManager::assingColumnTypes(const std::vector<std::string>& columns)
+{
+    std::string type;
+
+    std::cout << "\nAsignar tipos de datos a las columnas" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
+    
+    for(int column = 0; column < columns.size(); column++)
+    {
+        std::cout << "Ingrese el tipo de dato para la columna " << columns[column] << " >> ";
+        std::cin >> type;
+        columnType[csvFiles.back()][columns[column]] = type;
+    }
+
+    std::cout << "---------------------------------------------" << std::endl;
 }
 
 void FileManager::displayColumnTypes() const
