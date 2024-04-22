@@ -45,6 +45,7 @@ void FileManager::selectCsvFile()
         else if(opcion > 0)
         {
             readColumnTypes(csvFiles[opcion - 1]);
+            break;
         }
     } while(opcion != 0);
 }
@@ -61,14 +62,12 @@ void FileManager::readColumnTypes(const std::string& filename)
     std::vector<std::string> columns;
     if(std::getline(file, line))
     {
+        line.pop_back();
+        line.push_back(',');
         std::istringstream iss(line);
         std::string column;
         while(std::getline(iss, column, ','))
         {
-            if(!column.empty() && column.back() == '\n')
-            {
-                column.pop_back();
-            }
             columns.push_back(column);
         }
     }
@@ -84,23 +83,52 @@ void FileManager::readColumnTypes(const std::string& filename)
 
     for(int i = 0; i < columns.size(); i++)
     {
-        std::cout << i << ". " << columns[i] << std::endl;
+        std::cout << i + 1 << ". " << columns[i] << std::endl;
     }
 
     std::cout << "---------------------------------------------" << std::endl;
 
-    for(const auto& str: columns)
+    assingColumnTypes(columns);
+}
+
+void FileManager::loadDataTypes()
+{
+    std::ifstream file("tipo_datos.txt");
+    if(!file.is_open())
     {
-        if(!str.empty() && str.back() == '\n')
-            continue;
-        std::cout << str << "  " << str.size() << std::endl;
+        std::cerr << "Error al abrir el archivo datatypes.csv" << std::endl;
     }
 
-    assingColumnTypes(columns);
+    std::string line;
+    std::getline(file, line);
+
+    std::cout << "Tipos de datos disponibles: " << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
+    while(std::getline(file, line))
+    {
+        line.push_back(',');
+        std::istringstream iss(line);
+        std::string type, sizestr;
+        if(std::getline(iss, type, ',') && std::getline(iss, sizestr, ','))
+        {
+            int size = std::stoi(sizestr);
+            dataTypes[type] = size;
+            std::cout << type << std::endl;
+        }
+    }
+    std::cout << "---------------------------------------------" << std::endl;
+
+    file.close();
+}
+
+bool FileManager::isValidDataType(const std::string& type) const
+{
+    return dataTypes.find(type) != dataTypes.end();
 }
 
 void FileManager::assingColumnTypes(const std::vector<std::string>& columns)
 {
+    loadDataTypes();
     std::string type;
 
     std::cout << "\nAsignar tipos de datos a las columnas" << std::endl;
@@ -108,8 +136,17 @@ void FileManager::assingColumnTypes(const std::vector<std::string>& columns)
     
     for(int column = 0; column < columns.size(); column++)
     {
-        std::cout << "Ingrese el tipo de dato para la columna " << columns[column] << " >> ";
-        std::cin >> type;
+        do
+        {
+            std::cout << columns[column] << " >> ";
+            std::cin >> type;
+
+            if(!isValidDataType(type))
+            {
+                std::cerr << "Tipo de dato inválido, intente nuevamente" << std::endl;
+            }
+        } while(!isValidDataType(type));
+        
         columnType[csvFiles.back()][columns[column]] = type;
     }
 
@@ -118,13 +155,17 @@ void FileManager::assingColumnTypes(const std::vector<std::string>& columns)
 
 void FileManager::displayColumnTypes() const
 {
+    std::cout << "Archivo: " << csvFiles.back() << std::endl;
     std::cout << "Tipos de datos asignados a las columnas: " << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
+    std::cout << std::setw(15) << std::left << "Columna" << "Tipo de dato" << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
     for(const auto& [filename, columns]: columnType)
     {
-        std::cout << "Archivo: " << filename << std::endl;
         for(const auto& [column, type]: columns)
         {
-            std::cout << "\t" << column << "\t\t" << type << std::endl;
+            std::cout << std::setw(20) << std::left << column << type << std::endl;
         }
     }
+    std::cout << "---------------------------------------------" << std::endl;
 }

@@ -16,7 +16,7 @@ __int32,4
 int,4
 unsigned int,4
 long,4
-unsigned long.4
+unsigned long,4
 double,8
 __int64,8
 long double,8
