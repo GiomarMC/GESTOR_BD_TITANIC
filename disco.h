@@ -4,9 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <vector>
-#include <map>
-#include <filesystem>
 
 const int bytes = 1024;
 
@@ -22,7 +19,6 @@ class Disco
         void agregarEspacio(int);
         bool espacioSuficiente() const;
         int obtenerEspacioRestante() const;
-        void leerDatos();
 };
 
 #endif
