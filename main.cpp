@@ -20,7 +20,7 @@ void readCSV(const std::string& filename, const std::string& filename2)
     std::filesystem::path filePath = folderPath / filename2;
 
     std::ifstream file(filename);
-    std::ofstream file2(filename2);
+    std::ofstream file2(filePath);
     if(!file.is_open())
     {
         std::cerr << "Error al abrir el archivo " << std::endl;
