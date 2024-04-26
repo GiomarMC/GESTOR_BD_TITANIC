@@ -4,6 +4,51 @@
 #include <sstream>
 #include <filesystem>
 
+void spaceInDisk(const std::string& filename)
+{
+    std::ifstream file(filename);
+    std::string fileContent = filename;
+    fileContent.replace(fileContent.find(".csv"), 4, ".txt");
+    std::ofstream file2(fileContent);
+    if(!file.is_open())
+    {
+        std::cerr << "Error al abrir el archivo " << std::endl;
+        return;
+    }
+    std::string line;
+    int count = 0;
+    while(std::getline(file,line))
+    {
+        line.pop_back();
+        line.push_back(',');
+        std::istringstream iss(line);
+        std::string column;
+        file2 << count;
+        std::string temp;
+        while(std::getline(iss, column, ','))
+        {
+            if(column[0] == '"')
+            {
+                column.erase(0,1);
+                temp = column;
+            }
+            else if(column[column.size() - 1] == '"')
+            {
+                column.erase(column.size() - 1, 1);
+                temp += column;
+                file2 << "#" << temp;
+                temp.clear();
+            }
+            else
+                file2 << "#" << column;
+        }
+        file2 << "\n";
+        count++;
+    }
+    file.close();
+    file2.close();
+}
+
 void readCSV(const std::string& filename, const std::string& filename2)
 {
     std::filesystem::path folderPath = "usr/data/esquemas";
@@ -86,7 +131,7 @@ void listCSVFiles()
             std::cout << index << ". " << Files[i].filename() << std::endl;
             index++;
         }
-        std::cout << "Seleccione un archivo CSV o 0 para salir >> ";
+        std::cout << "Seleccione un archivo o 0 para salir >> ";
         std::cin >> option;
         if(option < 0 || option > csvCount)
         {
@@ -95,11 +140,16 @@ void listCSVFiles()
         else if(option > 0)
         {
             std::string filename = Files[option - 1].filename();
-            std::string txtFilname = filename;
-            txtFilname.replace(txtFilname.find(".csv"), 4, ".txt");
-            std::cout << "Archivo seleccionado: " << filename << std::endl;
-            readCSV(filename, txtFilname);
-            break;
+            if(filename.find(".csv") != std::string::npos)
+            {
+                std::string txtFilname = filename;
+                txtFilname.replace(txtFilname.find(".csv"), 4, ".txt");
+                std::cout << "Archivo seleccionado: " << filename << std::endl;
+                readCSV(filename, txtFilname);
+                spaceInDisk(filename);
+                break;
+            }
+            
         }
     } while (option != 0); 
 }
