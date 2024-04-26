@@ -166,16 +166,103 @@ void readCSV(const std::string& filename, const std::string& filename2)
     
 }
 
-void listCSVFiles(Disco& disco)
+void showColumns(const std::string& filename)
+{
+    std::filesystem::path folderPath = "usr/data/relaciones";
+
+    if(!std::filesystem::exists(folderPath))
+    {
+        if(!std::filesystem::create_directories(folderPath))
+        {
+            std::cerr << "Error al crear el directorio" << std::endl;
+            return;
+        }
+    }
+
+    std::filesystem::path path = "usr/data/esquemas";
+    std::filesystem::path filePath = path / filename;
+    std::ifstream file(filePath);
+    std::string line;
+    std::getline(file, line);
+    file.close();
+    size_t firtsPos = line.find("#");
+    std::string trimmedSchema;
+    if(firtsPos != std::string::npos)
+    {
+        trimmedSchema = line.substr(firtsPos + 1);
+    }
+
+    std::istringstream iss(trimmedSchema);
+    std::string column;
+
+    const int MAX_COLUMNS = 1000;
+    std::string columns[MAX_COLUMNS];
+
+    size_t index = 0;
+
+    while(std::getline(iss, column, '#'))
+    {
+        if(column != "int" && column != "float" && column != "string")
+        {
+            columns[index] = column;
+            index++;
+        }
+    }
+
+    std::cout << "----------------------------------------------------------" << std::endl;
+    std::cout << "Seleccione las columnas para generar la relacion " << std::endl;
+    for(int i = 0; i < index; i++)
+    {
+        std::cout << columns[i] << std::endl;
+    }
+    std::cout << "----------------------------------------------------------" << std::endl;
+    std::string relationName;
+    std::cout << "Ingrese el nombre de la relacion >> ";
+    std::cin >> relationName;
+    relationName += ".txt";
+    std::string columnsSelected;
+    std::cout << "Ingrese las columnas separadas por # >> ";
+    std::cin >> columnsSelected;
+    std::istringstream iss2(columnsSelected);
+    std::string columnSchema;
+    std::filesystem::path schemaPath = path / relationName;
+    std::ofstream schemaFile(schemaPath);
+    schemaFile << relationName;
+    std::cout << "Asignar tipo de dato int, float o string"  << std::endl;
+    std::cout << "---------------------------------------------" << std::endl;
+    std::string type;
+    while(std::getline(iss2, columnSchema, '#'))
+    {
+        do
+        {
+            std::cout << columnSchema << " >> ";
+            std::cin >> type;
+            if(column != "int" && column != "float" && column != "string")
+                std::cerr << "Tipo de dato inválido, intente nuevamente" << std::endl;
+            else
+                schemaFile << "#" << columnSchema << "#" << type;
+        } while (column != "int" && column != "float" && column != "string");
+        
+    }
+    std::cout << "---------------------------------------------" << std::endl;
+    schemaFile.close();
+    std::filesystem::path relationPath = folderPath / relationName;
+    std::ofstream relationFile(relationPath);
+    relationFile << columnsSelected;
+    relationFile.close();
+    std::cout << "Relacion creada con exito" << std::endl;
+}
+
+void listCSVFiles(Disco& disco, std::string path, std::string extension)
 {
     std::cout << "Archivos CSV encontrados: " << std::endl;
     const int MAX_FILES = 1000;
     std::filesystem::path Files[MAX_FILES];
     int csvCount = 0;   
     std::cout << "Seleccione un archivo CSV o 0 para salir >>" << std::endl;
-    for(const auto& entry: std::filesystem::directory_iterator("."))
+    for(const auto& entry: std::filesystem::directory_iterator(path))
     {
-        if(entry.path().extension() == ".csv")
+        if(entry.path().extension() == extension)
         {
             Files[csvCount] = entry.path();
             csvCount++;
@@ -209,6 +296,12 @@ void listCSVFiles(Disco& disco)
                 spaceInDisk(filename,disco);
                 break;
             }
+            if(filename.find(".txt") != std::string::npos)
+            {
+                std::cout << "Archivo seleccionado: " << filename << std::endl;
+                showColumns(filename);
+                break;
+            }
             
         }
     } while (option != 0); 
@@ -231,6 +324,11 @@ void diskSpace(Disco& disco)
     std::cout << "Espacio disponible: " << disco.obtenerEspacioRestante() << " bytes" << std::endl;
 }
 
+void createRelation(Disco& disco)
+{
+    listCSVFiles(disco, "usr/data/esquemas", ".txt");
+}
+
 void Menu()
 {
     Disco disco;
@@ -239,7 +337,7 @@ void Menu()
     do
     {
         std::cout << "1. Leer archivo CSV" << std::endl;
-        std::cout << "2. Mostrar esquema" << std::endl;
+        std::cout << "2. Crear Relacion" << std::endl;
         std::cout << "3. Mostrar espacio en Disco" << std::endl;
         std::cout << "0. Salir" << std::endl;
         std::cout << "Seleccione una opción >> ";
@@ -255,7 +353,7 @@ void Menu()
                     std::cout << "Seleccione una opción >> ";
                     std::cin >> option;
                     if(option == 1)
-                        listCSVFiles(disco);
+                        listCSVFiles(disco,".", ".csv");
                     else if(option == 0)
                         break;
                     else
@@ -264,6 +362,7 @@ void Menu()
                 
                 break;
             case 2:
+                createRelation(disco);
                 break;
             case 3:
                 diskSpace(disco);
