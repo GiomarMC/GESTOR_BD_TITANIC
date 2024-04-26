@@ -3,8 +3,20 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include "disco.h"
 
-void spaceInDisk(const std::string& filename)
+size_t getByteSize(const std::string& datatype, const std::string& value)
+{
+    if(datatype == "int")
+        return sizeof(int);
+    else if(datatype == "float")
+        return sizeof(float);
+    else if(datatype == "string")
+        return value.size() * sizeof(char);
+    return 0;
+}
+
+void spaceInDisk(const std::string& filename, Disco& disco)
 {
     std::ifstream file(filename);
     std::string fileContent = filename;
@@ -23,27 +35,50 @@ void spaceInDisk(const std::string& filename)
     schemaFile.close();
 
     size_t firtsPos = schemaLine.find("#");
+    std::string trimmedSchema;
     if(firtsPos != std::string::npos)
     {
-        std::string trimmedSchema = schemaLine.substr(firtsPos + 1);
-        std::cout << "Esquema sin la primera columna: " << trimmedSchema << std::endl;
+        trimmedSchema = schemaLine.substr(firtsPos + 1);
     }
-    else
+    std::istringstream iss(trimmedSchema);
+    std::string columnType;
+
+    const int MAX_COLUMNS = 1000;
+    std::string columnTypes[MAX_COLUMNS];
+
+    size_t indexType = 0;
+
+    while(std::getline(iss, columnType, '#'))
     {
-        std::cerr << "Formato de esquema incorrecto" << std::endl;
+        if(columnType == "int")
+        {
+            columnTypes[indexType] = "int";
+            indexType++;
+        }
+        else if(columnType == "float")
+        {
+            columnTypes[indexType] = "float";
+            indexType++;
+        }
+        else if(columnType == "string")
+        {
+            columnTypes[indexType] = "string";
+            indexType++;
+        }
     }
 
     std::string line;
-    int count = 0;
+    size_t count = 0;
     while(std::getline(file,line))
     {
-        int lineSize = 0;
         line.pop_back();
         line.push_back(',');
         std::istringstream iss(line);
         std::string column;
         file2 << count;
         std::string temp;
+        size_t index = 0;
+        size_t dataSize = 0;
         while(std::getline(iss, column, ','))
         {
             if(column[0] == '"')
@@ -55,12 +90,18 @@ void spaceInDisk(const std::string& filename)
             {
                 column.erase(column.size() - 1, 1);
                 temp += column;
+                dataSize += getByteSize(columnTypes[index], temp);
                 file2 << "#" << temp;
                 temp.clear();
             }
             else
+            {
+                dataSize += getByteSize(columnTypes[index], column);
                 file2 << "#" << column;
+            }
+            index++;
         }
+        disco.agregarEspacio(dataSize);
         file2 << "\n";
         count++;
     }
@@ -125,7 +166,7 @@ void readCSV(const std::string& filename, const std::string& filename2)
     
 }
 
-void listCSVFiles()
+void listCSVFiles(Disco& disco)
 {
     std::cout << "Archivos CSV encontrados: " << std::endl;
     const int MAX_FILES = 1000;
@@ -165,7 +206,7 @@ void listCSVFiles()
                 txtFilname.replace(txtFilname.find(".csv"), 4, ".txt");
                 std::cout << "Archivo seleccionado: " << filename << std::endl;
                 readCSV(filename, txtFilname);
-                spaceInDisk(filename);
+                spaceInDisk(filename,disco);
                 break;
             }
             
@@ -184,8 +225,15 @@ void userCSV()
     readCSV(filename, filename2);
 }
 
+void diskSpace(Disco& disco)
+{
+    std::cout << "Espacio ocupado: " << disco.getEspacio() << " bytes" << std::endl;
+    std::cout << "Espacio disponible: " << disco.obtenerEspacioRestante() << " bytes" << std::endl;
+}
+
 void Menu()
 {
+    Disco disco;
     int primaryOption;
     std::cout << "Bienvenido a MegatronDB" << std::endl;
     do
@@ -207,7 +255,7 @@ void Menu()
                     std::cout << "Seleccione una opción >> ";
                     std::cin >> option;
                     if(option == 1)
-                        listCSVFiles();
+                        listCSVFiles(disco);
                     else if(option == 0)
                         break;
                     else
@@ -218,6 +266,9 @@ void Menu()
             case 2:
                 break;
             case 3:
+                diskSpace(disco);
+                break;
+            case 0:
                 break;
             default:
                 std::cerr << "Opción inválida, ingrese el valor nuevamente" << std::endl;
