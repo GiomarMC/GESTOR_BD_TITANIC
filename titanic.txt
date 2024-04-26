@@ -1,13 +1,0 @@
-Data columns (total 12 columns):
-Age	jkh
-Cabin	hjg
-Embarked	kj
-Fare	jgh
-Name	jkh
-Parch	kjh
-PassengerId	itn
-Pclass	jk
-Sex	jkh
-SibSp	jkh
-Survived	gj
-Ticket	kj
