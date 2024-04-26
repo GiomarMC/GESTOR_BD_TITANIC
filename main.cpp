@@ -65,14 +65,14 @@ void listCSVFiles()
 {
     std::cout << "Archivos CSV encontrados: " << std::endl;
     const int MAX_FILES = 1000;
-    std::filesystem::path csvFiles[MAX_FILES];
+    std::filesystem::path Files[MAX_FILES];
     int csvCount = 0;   
     std::cout << "Seleccione un archivo CSV o 0 para salir >>" << std::endl;
     for(const auto& entry: std::filesystem::directory_iterator("."))
     {
         if(entry.path().extension() == ".csv")
         {
-            csvFiles[csvCount] = entry.path();
+            Files[csvCount] = entry.path();
             csvCount++;
         }
     }
@@ -83,7 +83,7 @@ void listCSVFiles()
         int index = 1;
         for(int i = 0; i < csvCount; i++)
         {
-            std::cout << index << ". " << csvFiles[i].filename() << std::endl;
+            std::cout << index << ". " << Files[i].filename() << std::endl;
             index++;
         }
         std::cout << "Seleccione un archivo CSV o 0 para salir >> ";
@@ -94,13 +94,14 @@ void listCSVFiles()
         }
         else if(option > 0)
         {
-            std::string filename = csvFiles[option - 1].filename();
+            std::string filename = Files[option - 1].filename();
+            std::string txtFilname = filename;
+            txtFilname.replace(txtFilname.find(".csv"), 4, ".txt");
             std::cout << "Archivo seleccionado: " << filename << std::endl;
-            readCSV(filename,"esquema.txt");
+            readCSV(filename, txtFilname);
             break;
         }
-    } while (option != 0);
-    
+    } while (option != 0); 
 }
 
 void userCSV()
