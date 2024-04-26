@@ -231,6 +231,8 @@ void showColumns(const std::string& filename)
     std::cout << "Asignar tipo de dato int, float o string"  << std::endl;
     std::cout << "---------------------------------------------" << std::endl;
     std::string type;
+    std::string schema[MAX_COLUMNS];
+    size_t indexSchema = 0;
     while(std::getline(iss2, columnSchema, '#'))
     {
         do
@@ -240,15 +242,60 @@ void showColumns(const std::string& filename)
             if(column != "int" && column != "float" && column != "string")
                 std::cerr << "Tipo de dato inválido, intente nuevamente" << std::endl;
             else
+            {
                 schemaFile << "#" << columnSchema << "#" << type;
+                schema[indexSchema] = columnSchema;
+                indexSchema++;
+            }
         } while (column != "int" && column != "float" && column != "string");
         
     }
     std::cout << "---------------------------------------------" << std::endl;
     schemaFile.close();
+
+    int indexRelation[MAX_COLUMNS];
+    size_t indexRelationSize = 0;
+    for(int i = 0; i < index; i++)
+    {
+        for(int j = 0; j < indexSchema; j++)
+        {
+            if(columns[i] == schema[j])
+            {
+                indexRelation[indexRelationSize] = i;
+                indexRelationSize++;
+            }
+        }
+    }
+
     std::filesystem::path relationPath = folderPath / relationName;
     std::ofstream relationFile(relationPath);
-    relationFile << columnsSelected;
+    std::ifstream filetxt(filename);
+    std::string lineTxt;
+    std::getline(filetxt, lineTxt);
+    relationFile << columnsSelected << "\n";
+    while(std::getline(filetxt, lineTxt))
+    {
+        std::istringstream iss(lineTxt);
+        std::string column;
+        std::string word;
+        int count = -1;
+        while(std::getline(iss, column, '#'))
+        {
+            for(int i = 0; i < indexRelationSize; i++)
+            {
+                if(count == indexRelation[i])
+                {
+                    word += column + "#";
+                }
+            }
+            count++;
+            if(count == index - 1)
+            {
+                word.pop_back();
+                relationFile << word << "\n";
+            }
+        }
+    }
     relationFile.close();
     std::cout << "Relacion creada con exito" << std::endl;
 }
