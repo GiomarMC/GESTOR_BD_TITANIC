@@ -7,7 +7,7 @@ int Disco::getEspacio()
     return espacioOcupado;
 }
 
-void Disco::agregarEspacio(int byte)
+void Disco::agregarEspacio(size_t byte)
 {
     espacioOcupado += byte;
 }

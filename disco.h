@@ -16,7 +16,7 @@ class Disco
     public:
         Disco();
         int getEspacio();
-        void agregarEspacio(int);
+        void agregarEspacio(size_t);
         bool espacioSuficiente() const;
         int obtenerEspacioRestante() const;
 };
