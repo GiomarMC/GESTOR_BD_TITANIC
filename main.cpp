@@ -9,16 +9,35 @@ void spaceInDisk(const std::string& filename)
     std::ifstream file(filename);
     std::string fileContent = filename;
     fileContent.replace(fileContent.find(".csv"), 4, ".txt");
+    std::filesystem::path filePath = "usr/data/esquemas/" + fileContent;
+    std::ifstream schemaFile(filePath);
     std::ofstream file2(fileContent);
-    if(!file.is_open())
+
+    if(!file.is_open() || !schemaFile.is_open())
     {
         std::cerr << "Error al abrir el archivo " << std::endl;
         return;
     }
+    std::string schemaLine;
+    std::getline(schemaFile,schemaLine);
+    schemaFile.close();
+
+    size_t firtsPos = schemaLine.find("#");
+    if(firtsPos != std::string::npos)
+    {
+        std::string trimmedSchema = schemaLine.substr(firtsPos + 1);
+        std::cout << "Esquema sin la primera columna: " << trimmedSchema << std::endl;
+    }
+    else
+    {
+        std::cerr << "Formato de esquema incorrecto" << std::endl;
+    }
+
     std::string line;
     int count = 0;
     while(std::getline(file,line))
     {
+        int lineSize = 0;
         line.pop_back();
         line.push_back(',');
         std::istringstream iss(line);
