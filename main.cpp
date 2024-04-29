@@ -376,19 +376,40 @@ void createRelation(Disco& disco)
     listCSVFiles(disco, "usr/data/esquemas", ".txt");
 }
 
+void addRegister(Disco& disco)
+{
+    
+}
+
+void doQuery(std::string query)
+{
+    if(query[0] == '&' && query[query.size() - 1] == '#')
+    {
+        for(int i = 0; i < query.size(); i++)
+        {
+           continue; 
+        }       
+    }
+}
+
 void Menu()
 {
     Disco disco;
+    std::string query;
     int primaryOption;
     std::cout << "Bienvenido a MegatronDB" << std::endl;
     do
     {
+        std::cout << "---------------------------------------------" << std::endl;
         std::cout << "1. Leer archivo CSV" << std::endl;
         std::cout << "2. Crear Relacion" << std::endl;
         std::cout << "3. Mostrar espacio en Disco" << std::endl;
+        std::cout << "4. Adicionar registro" << std::endl;
+        std::cout << "5. Realizar consulta" << std::endl;
         std::cout << "0. Salir" << std::endl;
         std::cout << "Seleccione una opción >> ";
         std::cin >> primaryOption;
+        std::cout << "---------------------------------------------" << std::endl;
         switch(primaryOption)
         {
             case 1:
@@ -413,6 +434,13 @@ void Menu()
                 break;
             case 3:
                 diskSpace(disco);
+                break;
+            case 4:
+                break;
+            case 5:
+                std::cout << "Ingrese la consulta >> ";
+                std::cin >> query;
+                doQuery(query);
                 break;
             case 0:
                 break;
