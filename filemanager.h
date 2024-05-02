@@ -8,6 +8,8 @@
 #include <filesystem>
 #include "disco.h"
 
+const int MAXFILES = 100;
 
+void listFiles(std::string, std::string);
 
 #endif
