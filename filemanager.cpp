@@ -67,7 +67,6 @@ void Menu()
             case 1:
                 MenuLeerArchivo();
                 break;
-            
             case 0:
                 std::cout << "Gracias por usar Megatron 3000" << std::endl;
                 break;
@@ -102,5 +101,25 @@ void MenuLeerArchivo()
                 break;
         }
     } while (option != 0);
-    
+}
+
+void createFolder(const std::string foldername)
+{
+    std::filesystem::path folderPath = "user/data/" + foldername;
+
+    if(!std::filesystem::exists(folderPath))
+    {
+        if(!std::filesystem::create_directory(folderPath))
+        {
+            std::cerr << "Error al crear la carpeta " << folderPath << std::endl;
+        }
+        else
+        {
+            std::cout << "Carpeta " << folderPath <<  " creada exitosamente" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "La carpeta ya existe" << std::endl;
+    }
 }
