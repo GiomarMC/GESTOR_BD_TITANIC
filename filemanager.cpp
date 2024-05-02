@@ -44,3 +44,63 @@ void listFiles(std::string path, std::string extension)
         }
     } while (option != 0);
 }
+
+void Menu()
+{
+    Disco disco;
+    int primaryOption;
+    std::cout << "Bienvenido a Megatron 3000" << std::endl;
+    do
+    {
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "1. Leer Archivo" << std::endl;
+        std::cout << "2. Crear Relacion" << std::endl;
+        std::cout << "3. Mostrar espacio en Disco" << std::endl;
+        std::cout << "4. Agregar Registro" << std::endl;
+        std::cout << "5. Realizar una consulta" << std::endl;
+        std::cout << "0. Salir" << std::endl;
+        std::cout << "Seleccione una opcion >> ";
+        std::cin >> primaryOption;
+        std::cout << "--------------------------------" << std::endl;
+        switch (primaryOption)
+        {
+            case 1:
+                MenuLeerArchivo();
+                break;
+            
+            case 0:
+                std::cout << "Gracias por usar Megatron 3000" << std::endl;
+                break;
+            default:
+                std::cout << "Opcion invalida, ingrese la opcion nuevamente" << std::endl;
+                break;
+        }
+
+    } while (primaryOption != 0);
+}
+
+void MenuLeerArchivo()
+{
+    int option;
+    do
+    {
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "1. Mostrar Archivos" << std::endl;
+        std::cout << "0. Salir" << std::endl;
+        std::cout << "Seleccione una opcion >> ";
+        std::cin >> option;
+        std::cout << "--------------------------------" << std::endl;
+        switch (option)
+        {
+            case 1:
+                listFiles(".", ".csv");
+                break;
+            case 0:
+                break;
+            default:
+                std::cout << "Opcion invalida, ingrese la opcion nuevamente" << std::endl;
+                break;
+        }
+    } while (option != 0);
+    
+}

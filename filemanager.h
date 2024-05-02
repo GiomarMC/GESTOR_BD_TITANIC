@@ -11,5 +11,7 @@
 const int MAXFILES = 100;
 
 void listFiles(std::string, std::string);
+void Menu();
+void MenuLeerArchivo();
 
 #endif
