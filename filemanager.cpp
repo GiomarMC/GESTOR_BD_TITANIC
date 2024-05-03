@@ -34,6 +34,7 @@ void listFiles(std::string path, std::string extension)
                 std::string txtFilename = filename;
                 txtFilename.replace(txtFilename.find(".csv"), 4, ".txt");
                 std::cout << "Archivo seleccionado: " << filename << std::endl;
+                readCSV(filename);
                 break;
             }
             if(filename.find(".txt") != std::string::npos)
@@ -103,7 +104,7 @@ void MenuLeerArchivo()
     } while (option != 0);
 }
 
-void createFolder(const std::string foldername)
+std::string createFolder(const std::string foldername)
 {
     std::filesystem::path folderPath = "user/data/" + foldername;
 
@@ -116,10 +117,57 @@ void createFolder(const std::string foldername)
         else
         {
             std::cout << "Carpeta " << folderPath <<  " creada exitosamente" << std::endl;
+            return folderPath;
         }
     }
     else
     {
         std::cout << "La carpeta ya existe" << std::endl;
+        return folderPath;
+    }
+}
+
+void readCSV(std::string filename)
+{
+    std::string path = createFolder("esquemas");
+    path += "/" + filename;
+    path.replace(path.find(".csv"), 4, ".txt");
+
+    std::ifstream csvFile(filename);
+    std::ofstream txtFile(path);
+
+    if(!csvFile.is_open())
+    {
+        std::cerr << "Error al abrir el archivo " << filename << std::endl;
+        return;
+    }
+
+    std::string line;
+    if(std::getline(csvFile, line))
+    {
+        line.pop_back();
+        line.push_back(',');
+        std::istringstream iss(line);
+        std::string column;
+        txtFile << filename << std::endl;
+        std::cout << "Columnas encontradas" << std::endl;
+        std::cout << "Asignar tipo de dato int, float, o char" << std::endl;
+        std::cout << "---------------------------------------------" << std::endl;
+        std::string type;
+        while(std::getline(iss,column,','))
+        {
+            do
+            {
+                std::cout << column << " >>";
+                std::cin >> type;
+                if(type != "int" && type != "float" && type != "char")
+                    std::cerr << "Tipo de dato invalido, intente nuevamente" << std::endl;
+                else
+                    txtFile << "#" << column << "#" << type;
+            } while (type != "int" && type != "float" && type != "char");
+        }
+        std::cout << "---------------------------------------------" << std::endl;
+        csvFile.close();
+        txtFile.close();
     }
 }

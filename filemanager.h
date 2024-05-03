@@ -13,6 +13,7 @@ const int MAXFILES = 100;
 void listFiles(std::string, std::string);
 void Menu();
 void MenuLeerArchivo();
-void createFolder(const std::string);
+std::string createFolder(const std::string);
+void readAndSaveCSV(std::string);
 
 #endif
