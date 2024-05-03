@@ -171,3 +171,142 @@ void readCSV(std::string filename)
         txtFile.close();
     }
 }
+
+void dataInDisk(std::string filename)
+{
+    std::ifstream csvFile(filename);
+    std::string newfile = filename.replace(filename.find(".csv"), 4, ".txt");
+    std::ofstream txtFile(newfile);
+
+    if(!csvFile.is_open())
+    {
+        std::cerr << "Error al abrir el archivo " << filename << std::endl;
+        return;
+    }
+
+    std::string types = createSchema(filename);
+    std::istringstream iss(types);
+    size_t indexType = 0;
+    const int MAX_COLUMNS = 100;
+    std::string columnsTypes[MAX_COLUMNS];
+    while(std::getline(iss, types, ','))
+    {
+        if(types == "int")
+        {
+            columnsTypes[indexType] = "int";
+            indexType++;
+        }
+        if(types == "float")
+        {
+            columnsTypes[indexType] = "float";
+            indexType++;
+        }
+        if(types == "char")
+        {
+            columnsTypes[indexType] = "char";
+            indexType++;
+        }
+    }
+
+    std::string line;
+    size_t count = 0;
+    while(std::getline(csvFile, line))
+    {
+        line.pop_back();
+        line.push_back(',');
+        txtFile << count;
+        std::istringstream iss(line);
+        std::string column;
+        std::string temp;
+        size_t index = 0;
+        size_t dataSize = 0;
+        while(std::getline(iss, column, ','))
+        {
+            if(column[0] == '"')
+            {
+                column.erase(0, 1);
+                temp += column;
+            }
+            else if(column[column.size() - 1] == '"')
+            {
+                column.erase(column.size() - 1, 1);
+                temp += column;
+                dataSize = getByteSize(columnsTypes[index], temp);
+                txtFile << '#' << temp;
+                temp.clear();
+            }
+            else
+            {
+                dataSize = getByteSize(columnsTypes[index], column);
+                txtFile << '#' << column;
+            
+            }
+            index++;
+        }
+        txtFile << '\n';
+        count++;
+    }
+    csvFile.close();
+    txtFile.close();
+}
+
+std::string createSchema(std::string filename)
+{
+    std::string path = createFolder("esquemas") + "/" + filename;
+    path.replace(path.find(".csv"), 4, ".txt");
+
+    std::ifstream txtFile(path);
+    
+    if(!txtFile.is_open())
+    {
+        std::cerr << "Error al abrir el archivo " << path << std::endl;
+        return;
+    }
+
+    std::string schemaLine;
+    std::getline(txtFile, schemaLine);
+    txtFile.close();
+
+    size_t firstPos = schemaLine.find("#");
+    std::string schema;
+    if(firstPos != std::string::npos)
+    {
+        schema = schemaLine.substr(firstPos + 1);
+    }
+
+    std::istringstream iss(schema);
+    std::string columnType;
+
+    std::string types;
+
+    size_t indexType = 0;
+
+    while(std::getline(iss, columnType, '#'))
+    {
+        if(columnType == "int")
+        {
+            types += "int" + ',';
+        }
+        if(columnType == "float")
+        {
+            types += "float" + ',';
+        }
+        if(columnType == "char")
+        {
+            types += "char" + ',';
+        }
+    }
+
+    return types;
+}
+
+size_t getByteSize(const std::string& datatype, const std::string& value)
+{
+    if(datatype == "int")
+        return sizeof(int);
+    else if(datatype == "float")
+        return sizeof(float);
+    else if(datatype == "string")
+        return value.size() * sizeof(char);
+    return 0;
+}
