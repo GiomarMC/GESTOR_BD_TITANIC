@@ -34,7 +34,8 @@ void listFiles(std::string path, std::string extension)
                 std::string txtFilename = filename;
                 txtFilename.replace(txtFilename.find(".csv"), 4, ".txt");
                 std::cout << "Archivo seleccionado: " << filename << std::endl;
-                readCSV(filename);
+                readAndSaveCSV(filename);
+                addDataInDisk(filename);
                 break;
             }
             if(filename.find(".txt") != std::string::npos)
@@ -127,7 +128,7 @@ std::string createFolder(const std::string foldername)
     }
 }
 
-void readCSV(std::string filename)
+void readAndSaveCSV(const std::string& filename)
 {
     std::string path = createFolder("esquemas");
     path += "/" + filename;
@@ -172,7 +173,7 @@ void readCSV(std::string filename)
     }
 }
 
-void dataInDisk(std::string filename)
+void addDataInDisk(std::string filename)
 {
     std::ifstream csvFile(filename);
     std::string newfile = filename.replace(filename.find(".csv"), 4, ".txt");
@@ -309,4 +310,10 @@ size_t getByteSize(const std::string& datatype, const std::string& value)
     else if(datatype == "string")
         return value.size() * sizeof(char);
     return 0;
+}
+
+void showColumns(const std::string& filename)
+{
+    std::string path = createFolder("relaciones") + "/" + filename;
+    
 }
