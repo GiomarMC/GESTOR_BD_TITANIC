@@ -1,21 +1,15 @@
-programa: main.o disco.o lista.o pasajeros.o filemanager.o
-	g++ -o programa main.o disco.o lista.o pasajeros.o filemanager.o
+programa: main.o filemanager.o disco.o
+	g++ -o programa main.o filemanager.o disco.o
 	./programa
 
-main.o: main.cpp disco.h
+main.o: main.cpp filemanager.h
 	g++ -c main.cpp
 
-disco.o: disco.cpp disco.h lista.h
-	g++ -c disco.cpp
-
-pasajeros.o: pasajeros.cpp pasajeros.h
-	g++ -c pasajeros.cpp
-
-lista.o: lista.cpp lista.h pasajeros.h
-	g++ -c lista.cpp
-
-filemanager.o: filemanager.cpp filemanager.h
+filemanager.o: filemanager.cpp filemanager.h disco.h
 	g++ -c filemanager.cpp
+
+disco.o: disco.cpp disco.h
+	g++ -c disco.cpp
 
 clean:
 	rm -f *.o programa
