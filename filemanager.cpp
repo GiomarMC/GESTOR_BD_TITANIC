@@ -1,6 +1,6 @@
 #include "filemanager.h"
 
-void listFiles(std::string path, std::string extension)
+void listFiles(Disco& disco,std::string path, std::string extension)
 {
     std::cout << "Archivos encontrados: " << std::endl;
     std::filesystem::path files[MAXFILES];
@@ -35,7 +35,7 @@ void listFiles(std::string path, std::string extension)
                 txtFilename.replace(txtFilename.find(".csv"), 4, ".txt");
                 std::cout << "Archivo seleccionado: " << filename << std::endl;
                 readAndSaveCSV(filename);
-                addDataInDisk(filename);
+                addDataInDisk(disco,filename);
                 break;
             }
             if(filename.find(".txt") != std::string::npos)
@@ -67,7 +67,12 @@ void Menu()
         switch (primaryOption)
         {
             case 1:
-                MenuLeerArchivo();
+                MenuLeerArchivo(disco);
+                break;
+            case 2:
+                createRelation(disco);
+                break;
+            case 3:
                 break;
             case 0:
                 std::cout << "Gracias por usar Megatron 3000" << std::endl;
@@ -80,7 +85,7 @@ void Menu()
     } while (primaryOption != 0);
 }
 
-void MenuLeerArchivo()
+void MenuLeerArchivo(Disco& disco)
 {
     int option;
     do
@@ -94,7 +99,7 @@ void MenuLeerArchivo()
         switch (option)
         {
             case 1:
-                listFiles(".", ".csv");
+                listFiles(disco,".", ".csv");
                 break;
             case 0:
                 break;
@@ -173,7 +178,7 @@ void readAndSaveCSV(const std::string& filename)
     }
 }
 
-void addDataInDisk(std::string filename)
+void addDataInDisk(Disco& disco,std::string filename)
 {
     std::ifstream csvFile(filename);
     std::string newfile = filename.replace(filename.find(".csv"), 4, ".txt");
@@ -245,6 +250,7 @@ void addDataInDisk(std::string filename)
             }
             index++;
         }
+        disco.agregarEspacio(dataSize);
         txtFile << '\n';
         count++;
     }
@@ -443,4 +449,15 @@ void showColumns(const std::string& filename)
     }
     relationFile.close();
     std::cout << "Relacion creada exitosamente" << std::endl;
+}
+
+void createRelation(Disco& disco)
+{
+    listFiles(disco, "user/data/esquemas", ".txt");
+}
+
+void diskSpace(Disco& disco)
+{
+    std::cout << "Espacio ocupado: " << disco.getEspacio() << " bytes" << std::endl;
+    std::cout << "Espacio disponible: " << disco.obtenerEspacioRestante() << " bytes" << std::endl;
 }
