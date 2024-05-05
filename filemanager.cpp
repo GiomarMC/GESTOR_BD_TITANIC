@@ -119,6 +119,7 @@ std::string createFolder(const std::string foldername)
         if(!std::filesystem::create_directory(folderPath))
         {
             std::cerr << "Error al crear la carpeta " << folderPath << std::endl;
+            return 0;
         }
         else
         {
@@ -267,44 +268,46 @@ std::string readDataTypes(std::string filename)
     if(!txtFile.is_open())
     {
         std::cerr << "Error al abrir el archivo " << filename << std::endl;
-        return;
+        return 0;
     }
-
-    std::string fileLine;
-    std::getline(txtFile, fileLine);
-    txtFile.close();
-
-    size_t firstPos = fileLine.find("#");
-    std::string file;
-    if(firstPos != std::string::npos)
+    else
     {
-        file = fileLine.substr(firstPos + 1);
+        std::string fileLine;
+        std::getline(txtFile, fileLine);
+        txtFile.close();
+
+        size_t firstPos = fileLine.find("#");
+        std::string file;
+        if(firstPos != std::string::npos)
+        {
+            file = fileLine.substr(firstPos + 1);
+        }
+
+        std::istringstream iss(file);
+        std::string columnType;
+
+        std::string types;
+
+        size_t indexType = 0;
+
+        while(std::getline(iss, columnType, '#'))
+        {
+            if(columnType == "int")
+            {
+                types += "int" + ',';
+            }
+            if(columnType == "float")
+            {
+                types += "float" + ',';
+            }
+            if(columnType == "char")
+            {
+                types += "char" + ',';
+            }
+        }
+
+        return types;
     }
-
-    std::istringstream iss(file);
-    std::string columnType;
-
-    std::string types;
-
-    size_t indexType = 0;
-
-    while(std::getline(iss, columnType, '#'))
-    {
-        if(columnType == "int")
-        {
-            types += "int" + ',';
-        }
-        if(columnType == "float")
-        {
-            types += "float" + ',';
-        }
-        if(columnType == "char")
-        {
-            types += "char" + ',';
-        }
-    }
-
-    return types;
 }
 
 size_t getByteSize(const std::string& datatype, const std::string& value)
