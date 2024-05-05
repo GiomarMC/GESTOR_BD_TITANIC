@@ -16,7 +16,7 @@ void MenuLeerArchivo();
 std::string createFolder(const std::string);
 void readAndSaveCSV(const std::string&);
 void addDataInDisk(std::string);
-std::string createSchema(std::string);
+std::string readDataTypes(std::string);
 size_t getByteSize(const std::string&, const std::string&);
 void showColumns(const std::string&);
 

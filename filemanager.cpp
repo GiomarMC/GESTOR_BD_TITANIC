@@ -185,7 +185,8 @@ void addDataInDisk(std::string filename)
         return;
     }
 
-    std::string types = createSchema(filename);
+    std::string path = createFolder("esquemas") + "/" + filename;
+    std::string types = readDataTypes(path);
     std::istringstream iss(types);
     size_t indexType = 0;
     const int MAX_COLUMNS = 100;
@@ -251,31 +252,30 @@ void addDataInDisk(std::string filename)
     txtFile.close();
 }
 
-std::string createSchema(std::string filename)
+std::string readDataTypes(std::string filename)
 {
-    std::string path = createFolder("esquemas") + "/" + filename;
-    path.replace(path.find(".csv"), 4, ".txt");
+    filename.replace(filename.find(".csv"), 4, ".txt");
 
-    std::ifstream txtFile(path);
+    std::ifstream txtFile(filename);
     
     if(!txtFile.is_open())
     {
-        std::cerr << "Error al abrir el archivo " << path << std::endl;
+        std::cerr << "Error al abrir el archivo " << filename << std::endl;
         return;
     }
 
-    std::string schemaLine;
-    std::getline(txtFile, schemaLine);
+    std::string fileLine;
+    std::getline(txtFile, fileLine);
     txtFile.close();
 
-    size_t firstPos = schemaLine.find("#");
-    std::string schema;
+    size_t firstPos = fileLine.find("#");
+    std::string file;
     if(firstPos != std::string::npos)
     {
-        schema = schemaLine.substr(firstPos + 1);
+        file = fileLine.substr(firstPos + 1);
     }
 
-    std::istringstream iss(schema);
+    std::istringstream iss(file);
     std::string columnType;
 
     std::string types;
@@ -314,6 +314,133 @@ size_t getByteSize(const std::string& datatype, const std::string& value)
 
 void showColumns(const std::string& filename)
 {
-    std::string path = createFolder("relaciones") + "/" + filename;
+    std::string relationPath = createFolder("relaciones");
+    std::string schemaPath = createFolder("esquemas") + "/" + filename;
+
+    std::ifstream schemaFile(schemaPath);
+    std::string schemaLine;
+    std::getline(schemaFile, schemaLine);
+    schemaFile.close();
+
+    size_t firstPos = schemaLine.find("#");
+    std::string trimmedSchema;
+    if(firstPos != std::string::npos)
+    {
+        trimmedSchema = schemaLine.substr(firstPos + 1);
+    }
+
+    std::istringstream iss(trimmedSchema);
+    std::string column;
+
+    const int MAX_COLUMNS = 100;
+    std::string columns[MAX_COLUMNS];
+    size_t index = 0;
+
+    while(std::getline(iss, column, '#'))
+    {
+        if(column != "int" && column != "float" && column != "char")
+        {
+            columns[index] = column;
+            index++;
+        }
+    }
+
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << "Seleccione las columnas para generar la relacion" << std::endl;
     
+    for(int i = 0; i < index; i++)
+    {
+        std::cout << i + 1 << ". " << columns[i] << std::endl;
+    }
+
+    std::cout << "--------------------------------" << std::endl;
+
+    std::string relationName;
+    std::cout << "Ingrese el nombre de la relacion >> ";
+    std::cin >> relationName;
+    relationName += ".txt";
+
+    std::string columnsSelected;
+    std::cout << "Ingrese las columnas seleccionadas separadas por # >> ";
+    std::cin >> columnsSelected;
+
+    std::istringstream issColumns(columnsSelected);
+    std::string columnSchema;
+
+    std::ofstream relationSchemaFile(relationPath + "/" + relationName);
+    relationSchemaFile << filename;
+
+    std::cout << "Asignar tipo de dato int, float, o char" << std::endl;
+    std::cout << "--------------------------------" << std::endl;
+    
+    std::string type;
+    std::string schema[MAX_COLUMNS];
+
+    size_t indexSchema = 0;
+
+    while (std::getline(issColumns, columnSchema, '#'))
+    {
+        do
+        {
+            std::cout << columnSchema << " >>";
+            std::cin >> type;
+            if(type != "int" && type != "float" && type != "char")
+                std::cerr << "Tipo de dato invalido, intente nuevamente" << std::endl;
+            else
+            {
+                relationSchemaFile << '#' << columnSchema << '#' << type;
+                schema[indexSchema] = columnSchema;
+                indexSchema++;
+            }
+        } while (columnSchema != "int" && columnSchema != "float" && columnSchema != "char");
+    }
+
+    std::cout << "--------------------------------" << std::endl;
+    relationSchemaFile.close();
+
+    int indexRelation[MAX_COLUMNS];
+    size_t indexRelationSize = 0;
+    for(int i = 0; i < index; i++)
+    {
+        for(int j = 0; j < indexSchema; j++)
+        {
+            if(columns[i] == schema[j])
+            {
+                indexRelation[indexRelationSize] = j;
+                indexRelationSize++;
+            }
+        }
+    }
+
+    relationPath += "/" + relationName;
+    std::ofstream relationFile(relationPath);
+    std::ifstream filetxt(filename);
+    std::string lineTxt;
+    std::getline(filetxt, lineTxt);
+    relationFile << columnsSelected << "\n";
+    while(std::getline(filetxt, lineTxt))
+    {
+        std::istringstream iss(lineTxt);
+        std::string columnTxt;
+        std::string word;
+        int count = -1;
+        while(std::getline(iss, columnTxt, '#'))
+        {
+            for(int i = 0; i < indexRelationSize; i++)
+            {
+                if(count == indexRelation[i])
+                {
+                    word += columnTxt + '#';
+                }
+            }
+            count++;
+            if(count == index - 1)
+            {
+                word.pop_back();
+                relationFile << word << "\n";
+            }
+        }
+    }
+    relationFile.close();
+    std::cout << "Relacion creada exitosamente" << std::endl;
 }
