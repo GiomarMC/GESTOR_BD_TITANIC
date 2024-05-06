@@ -73,6 +73,7 @@ void Menu()
                 createRelation(disco);
                 break;
             case 3:
+                diskSpace(disco);
                 break;
             case 0:
                 std::cout << "Gracias por usar Megatron 3000" << std::endl;
@@ -116,7 +117,7 @@ std::string createFolder(const std::string foldername)
 
     if(!std::filesystem::exists(folderPath))
     {
-        if(!std::filesystem::create_directory(folderPath))
+        if(!std::filesystem::create_directories(folderPath))
         {
             std::cerr << "Error al crear la carpeta " << folderPath << std::endl;
             return 0;
@@ -136,10 +137,10 @@ std::string createFolder(const std::string foldername)
 
 void readAndSaveCSV(const std::string& filename)
 {
-    std::string path = createFolder("esquemas");
-    path += "/" + filename;
-    path.replace(path.find(".csv"), 4, ".txt");
-
+    std::filesystem::path path = createFolder("esquemas");
+    std::string newfile = filename;
+    newfile.replace(newfile.find(".csv"), 4, ".txt");
+    path += "/" + newfile;
     std::ifstream csvFile(filename);
     std::ofstream txtFile(path);
 
@@ -156,7 +157,7 @@ void readAndSaveCSV(const std::string& filename)
         line.push_back(',');
         std::istringstream iss(line);
         std::string column;
-        txtFile << filename << std::endl;
+        txtFile << filename;
         std::cout << "Columnas encontradas" << std::endl;
         std::cout << "Asignar tipo de dato int, float, o char" << std::endl;
         std::cout << "---------------------------------------------" << std::endl;
@@ -165,7 +166,7 @@ void readAndSaveCSV(const std::string& filename)
         {
             do
             {
-                std::cout << column << " >>";
+                std::cout << column << " >> ";
                 std::cin >> type;
                 if(type != "int" && type != "float" && type != "char")
                     std::cerr << "Tipo de dato invalido, intente nuevamente" << std::endl;
@@ -177,12 +178,14 @@ void readAndSaveCSV(const std::string& filename)
         csvFile.close();
         txtFile.close();
     }
+    std::cout << "Archivo guardado exitosamente" << std::endl;
 }
 
 void addDataInDisk(Disco& disco,std::string filename)
 {
     std::ifstream csvFile(filename);
-    std::string newfile = filename.replace(filename.find(".csv"), 4, ".txt");
+    std::string newfile = filename;
+    newfile.replace(newfile.find(".csv"), 4, ".txt");
     std::ofstream txtFile(newfile);
 
     if(!csvFile.is_open())
@@ -239,13 +242,13 @@ void addDataInDisk(Disco& disco,std::string filename)
             {
                 column.erase(column.size() - 1, 1);
                 temp += column;
-                dataSize = getByteSize(columnsTypes[index], temp);
+                dataSize += getByteSize(columnsTypes[index], temp);
                 txtFile << '#' << temp;
                 temp.clear();
             }
             else
             {
-                dataSize = getByteSize(columnsTypes[index], column);
+                dataSize += getByteSize(columnsTypes[index], column);
                 txtFile << '#' << column;
             
             }
@@ -316,7 +319,7 @@ size_t getByteSize(const std::string& datatype, const std::string& value)
         return sizeof(int);
     else if(datatype == "float")
         return sizeof(float);
-    else if(datatype == "string")
+    else if(datatype == "char")
         return value.size() * sizeof(char);
     return 0;
 }
