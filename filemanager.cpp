@@ -288,7 +288,7 @@ std::string readDataTypes(std::string filename)
         {
             file = fileLine.substr(firstPos + 1);
         }
-
+        
         std::istringstream iss(file);
         std::string columnType;
 
@@ -298,17 +298,10 @@ std::string readDataTypes(std::string filename)
 
         while(std::getline(iss, columnType, '#'))
         {
-            if(columnType == "int")
+            if(columnType == "int" || columnType == "float" || columnType == "char")
             {
-                types += "int" + ',';
-            }
-            if(columnType == "float")
-            {
-                types += "float" + ',';
-            }
-            if(columnType == "char")
-            {
-                types += "char" + ',';
+                types += columnType + ',';
+                std::cout << columnType << std::endl;
             }
         }
         types.pop_back();
