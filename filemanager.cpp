@@ -41,6 +41,7 @@ void listFiles(Disco& disco,std::string path, std::string extension)
             if(filename.find(".txt") != std::string::npos)
             {
                 std::cout << "Archivo seleccionado: " << filename << std::endl;
+                showColumns(filename);
                 break;
             }
         }
@@ -322,7 +323,7 @@ size_t getByteSize(const std::string& datatype, const std::string& value)
 
 void showColumns(const std::string& filename)
 {
-    std::string relationPath = createFolder("relaciones");
+    std::string relationPath = createFolder("esquemas");
     std::string schemaPath = createFolder("esquemas") + "/" + filename;
 
     std::ifstream schemaFile(schemaPath);
@@ -374,8 +375,8 @@ void showColumns(const std::string& filename)
 
     std::istringstream issColumns(columnsSelected);
     std::string columnSchema;
-
-    std::ofstream relationSchemaFile(relationPath + "/" + relationName);
+    relationPath += "/" + relationName;
+    std::ofstream relationSchemaFile(relationPath);
     relationSchemaFile << filename;
 
     std::cout << "Asignar tipo de dato int, float, o char" << std::endl;
@@ -390,7 +391,7 @@ void showColumns(const std::string& filename)
     {
         do
         {
-            std::cout << columnSchema << " >>";
+            std::cout << columnSchema << " >> ";
             std::cin >> type;
             if(type != "int" && type != "float" && type != "char")
                 std::cerr << "Tipo de dato invalido, intente nuevamente" << std::endl;
@@ -400,7 +401,7 @@ void showColumns(const std::string& filename)
                 schema[indexSchema] = columnSchema;
                 indexSchema++;
             }
-        } while (columnSchema != "int" && columnSchema != "float" && columnSchema != "char");
+        } while (type != "int" && type != "float" && type != "char");
     }
 
     std::cout << "--------------------------------" << std::endl;
@@ -420,8 +421,8 @@ void showColumns(const std::string& filename)
         }
     }
 
-    relationPath += "/" + relationName;
-    std::ofstream relationFile(relationPath);
+    std::filesystem::path pathRelation = createFolder("relaciones") + "/" + relationName;
+    std::ofstream relationFile(pathRelation);
     std::ifstream filetxt(filename);
     std::string lineTxt;
     std::getline(filetxt, lineTxt);
