@@ -194,7 +194,8 @@ void addDataInDisk(Disco& disco,std::string filename)
         return;
     }
 
-    std::string path = createFolder("esquemas") + "/" + filename;
+    std::filesystem::path path = createFolder("esquemas") + "/" + filename;
+    std::cout << "Path: " << path << std::endl;
     std::string types = readDataTypes(path);
     std::istringstream iss(types);
     size_t indexType = 0;
@@ -254,6 +255,7 @@ void addDataInDisk(Disco& disco,std::string filename)
             }
             index++;
         }
+        std::cout << "Espacio ocupado: " << dataSize << " bytes" << std::endl;
         disco.agregarEspacio(dataSize);
         txtFile << '\n';
         count++;
@@ -265,6 +267,7 @@ void addDataInDisk(Disco& disco,std::string filename)
 std::string readDataTypes(std::string filename)
 {
     filename.replace(filename.find(".csv"), 4, ".txt");
+    std::cout << "Path: " << filename << std::endl;
 
     std::ifstream txtFile(filename);
     
@@ -308,7 +311,7 @@ std::string readDataTypes(std::string filename)
                 types += "char" + ',';
             }
         }
-
+        types.pop_back();
         return types;
     }
 }
