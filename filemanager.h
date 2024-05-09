@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <cstring>
 
 const int MAXFILES = 100;
 
@@ -21,5 +22,7 @@ size_t getByteSize(const std::string&, const std::string&);
 void showColumns(const std::string&);
 void createRelation(Disco&);
 void diskSpace(Disco&);
+void MenuConsulta();
+void readSentence(std::string);
 
 #endif

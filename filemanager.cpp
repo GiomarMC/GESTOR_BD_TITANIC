@@ -76,6 +76,11 @@ void Menu()
             case 3:
                 diskSpace(disco);
                 break;
+            case 4:
+                break;
+            case 5:
+                MenuConsulta();
+                break;
             case 0:
                 std::cout << "Gracias por usar Megatron 3000" << std::endl;
                 break;
@@ -110,6 +115,15 @@ void MenuLeerArchivo(Disco& disco)
                 break;
         }
     } while (option != 0);
+}
+
+void MenuConsulta()
+{
+    std::string sentence;
+    std::cout << "Ingrese la consulta >> ";
+    std::cin.ignore();
+    std::getline(std::cin, sentence);
+    readSentence(sentence);
 }
 
 std::string createFolder(const std::string foldername)
@@ -463,4 +477,78 @@ void diskSpace(Disco& disco)
 {
     std::cout << "Espacio ocupado: " << disco.getEspacio() << " bytes" << std::endl;
     std::cout << "Espacio disponible: " << disco.obtenerEspacioRestante() << " bytes" << std::endl;
+}
+
+void readSentence(std::string sentence)
+{
+    if(sentence.find('&') != std::string::npos && sentence.find('#') != std::string::npos)
+    {
+        std::istringstream iss(sentence);
+        std::string word;
+        bool select = false;
+        bool from = false;
+        bool where = false;
+        bool filename = false;
+        std::string columns;
+        std::string tables;
+        std::string conditions;
+        std::string file;
+        sentence.pop_back();
+        sentence.erase(sentence.find('&'), 1);
+        std::cout << sentence << std::endl;
+        while(std::getline(iss, word, ' '))
+        {
+            if(strcmp(word.c_str(), "select") == 0)
+            {
+                select = true;
+            }
+
+            else if(strcmp(word.c_str(), "from") == 0)
+            {
+                select = false;
+                from = true;
+            }
+
+            else if(strcmp(word.c_str(), "where") == 0)
+            {
+                from = false;
+                where = true;
+            }
+            
+            else if(strcmp(word.c_str(), "|") == 0)
+            {
+                where = false;
+                filename = true;
+            }
+
+            else if(select)
+            {
+                columns += word;
+            }
+
+            else if(from)
+            {
+                tables = word;
+            }
+            
+            else if(where)
+            {
+                conditions += word + ' ';
+            }
+
+            else if(filename)
+            {
+                file = word;
+                file.pop_back();
+                file += ".txt";
+            }
+            else
+            {
+                std::cerr << "Error en la consulta" << std::endl;
+            }
+        }
+
+        std::cout << "Buscando en columna" << columns << " de la tabla " << tables << " con la condicion " << conditions << " que se guardara en archivo " << file << std::endl;
+    }
+       
 }
