@@ -483,7 +483,6 @@ void readSentence(std::string sentence)
 {
     if(sentence.find('&') != std::string::npos && sentence.find('#') != std::string::npos)
     {
-        std::istringstream iss(sentence);
         std::string word;
         bool select = false;
         bool from = false;
@@ -496,26 +495,28 @@ void readSentence(std::string sentence)
         sentence.pop_back();
         sentence.erase(sentence.find('&'), 1);
         std::cout << sentence << std::endl;
+        std::istringstream iss(sentence);
         while(std::getline(iss, word, ' '))
         {
-            if(strcmp(word.c_str(), "select") == 0)
+            std::cout << word << std::endl;
+            if(word == "select")
             {
                 select = true;
             }
 
-            else if(strcmp(word.c_str(), "from") == 0)
+            else if(word == "from")
             {
                 select = false;
                 from = true;
             }
 
-            else if(strcmp(word.c_str(), "where") == 0)
+            else if(word == "where")
             {
                 from = false;
                 where = true;
             }
             
-            else if(strcmp(word.c_str(), "|") == 0)
+            else if(word == "|")
             {
                 where = false;
                 filename = true;
@@ -548,7 +549,7 @@ void readSentence(std::string sentence)
             }
         }
 
-        std::cout << "Buscando en columna" << columns << " de la tabla " << tables << " con la condicion " << conditions << " que se guardara en archivo " << file << std::endl;
+        std::cout << "Buscando en columna " << columns << " de la tabla " << tables << " con la condicion " << conditions << " que se guardara en archivo " << file << std::endl;
     }
-       
 }
+
