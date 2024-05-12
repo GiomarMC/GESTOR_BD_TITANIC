@@ -555,19 +555,47 @@ void executeSentence(std::string columns, std::string tables, std::string condit
 {
     std::ifstream file(tables);
     std::string columnsLine;
-    int count = -1;
+    int positionColumns;
     std::getline(file, columnsLine);
-    std::cout << columnsLine << std::endl;
-    std::istringstream iss(columnsLine);
-    std::string column;
-    while(std::getline(iss, column, '#'))
+    positionColumns = getPosition(columnsLine, columns);
+    std::cout << "Columna encontrada en la posicion " << positionColumns << std::endl;
+
+    std::istringstream iss(conditions);
+    std::string word;
+    std::getline(iss, word, ' ');
+    std::cout << "Palabra: " << word << std::endl;
+    int positionCondition;
+    positionCondition = getPosition(columnsLine, word);
+    std::cout << "Condicion encontrada en la posicion " << positionCondition << std::endl;
+    
+    while(std::getline(file, columnsLine))
     {
-        std::cout << column << std::endl;
-        if(column == columns)
+        std::istringstream iss(columnsLine);
+        std::string column;
+        int count = 0;
+        while(std::getline(iss, column, '#'))
         {
-            break;
+            if(count == positionColumns)
+            {
+                std::cout << column << std::endl;
+            }
+            count++;
+        }
+    }
+}
+
+int getPosition(const std::string& columns, const std::string& column)
+{
+    std::istringstream iss(columns);
+    std::string word;
+    int count = 0;
+    while(std::getline(iss, word, '#'))
+    {
+        if(word == column)
+        {
+            return count;
         }
         count++;
     }
-    std::cout << "Columna encontrada en la posicion " << count << std::endl;
+    return count;
 }

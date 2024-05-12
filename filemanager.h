@@ -25,5 +25,6 @@ void diskSpace(Disco&);
 void MenuConsulta();
 void readSentence(std::string);
 void executeSentence(std::string,std::string,std::string,std::string);
+int getPosition(const std::string&, const std::string&);
 
 #endif
