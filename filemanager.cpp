@@ -494,11 +494,9 @@ void readSentence(std::string sentence)
         std::string file;
         sentence.pop_back();
         sentence.erase(sentence.find('&'), 1);
-        std::cout << sentence << std::endl;
         std::istringstream iss(sentence);
         while(std::getline(iss, word, ' '))
         {
-            std::cout << word << std::endl;
             if(word == "select")
             {
                 select = true;
@@ -548,8 +546,28 @@ void readSentence(std::string sentence)
                 std::cerr << "Error en la consulta" << std::endl;
             }
         }
-
-        std::cout << "Buscando en columna " << columns << " de la tabla " << tables << " con la condicion " << conditions << " que se guardara en archivo " << file << std::endl;
+        tables += ".txt";
+        executeSentence(columns,tables,conditions,file);
     }
 }
 
+void executeSentence(std::string columns, std::string tables, std::string conditions, std::string filename)
+{
+    std::ifstream file(tables);
+    std::string columnsLine;
+    int count = -1;
+    std::getline(file, columnsLine);
+    std::cout << columnsLine << std::endl;
+    std::istringstream iss(columnsLine);
+    std::string column;
+    while(std::getline(iss, column, '#'))
+    {
+        std::cout << column << std::endl;
+        if(column == columns)
+        {
+            break;
+        }
+        count++;
+    }
+    std::cout << "Columna encontrada en la posicion " << count << std::endl;
+}

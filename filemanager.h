@@ -24,5 +24,6 @@ void createRelation(Disco&);
 void diskSpace(Disco&);
 void MenuConsulta();
 void readSentence(std::string);
+void executeSentence(std::string,std::string,std::string,std::string);
 
 #endif
