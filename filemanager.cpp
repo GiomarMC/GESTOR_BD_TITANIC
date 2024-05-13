@@ -567,17 +567,25 @@ void executeSentence(std::string columns, std::string tables, std::string condit
     int positionCondition;
     positionCondition = getPosition(columnsLine, word);
     std::cout << "Condicion encontrada en la posicion " << positionCondition << std::endl;
-    
+    std::ofstream fileResult(filename);
+
     while(std::getline(file, columnsLine))
     {
         std::istringstream iss(columnsLine);
         std::string column;
         int count = 0;
+        std::string registerLine;
         while(std::getline(iss, column, '#'))
         {
-            if(count == positionColumns)
+            if(positionColumns != -1 && count == positionColumns)
             {
-                std::cout << column << std::endl;
+                registerLine = column;
+                fileResult << registerLine << "\n";
+                registerLine.clear();
+            }
+            if(positionColumns == -1)
+            {
+                registerLine += column + '#';   
             }
             count++;
         }
@@ -597,5 +605,5 @@ int getPosition(const std::string& columns, const std::string& column)
         }
         count++;
     }
-    return count;
+    return -1;
 }
