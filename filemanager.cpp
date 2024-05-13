@@ -51,6 +51,7 @@ void listFiles(diskManager& disco,std::string path, std::string extension)
 void Menu()
 {
     diskManager disco;
+    disco.createDirectory();
     int primaryOption;
     std::cout << "Bienvenido a Megatron 3000" << std::endl;
     do

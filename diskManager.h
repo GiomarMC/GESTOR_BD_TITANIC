@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
 
 class diskManager
 {
@@ -16,7 +17,7 @@ class diskManager
         unsigned long espacioOcupado;
     public:
         diskManager();
-        void print();
+        void createDirectory();
         unsigned long getEspacio();
         void agregarEspacio(size_t);
         bool espacioSuficiente() const;
