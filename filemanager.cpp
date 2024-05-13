@@ -316,7 +316,6 @@ std::string readDataTypes(std::string filename)
             if(columnType == "int" || columnType == "float" || columnType == "char")
             {
                 types += columnType + ',';
-                std::cout << columnType << std::endl;
             }
         }
         types.pop_back();
@@ -569,10 +568,10 @@ void executeSentence(std::string columns, std::string tables, std::string condit
     std::cout << "Condicion encontrada en la posicion " << positionCondition << std::endl;
     std::ofstream fileResult(filename);
 
+    tables.replace(tables.find(".txt"), 4, ".csv");
     std::filesystem::path path = createFolder("esquemas") + "/" + tables;
     std::cout << "Path: " << path << std::endl;
     std::string types = readDataTypes(path);
-    std::cout << "Tipos de datos: " << types << std::endl;
 
     while(std::getline(file, columnsLine))
     {
