@@ -572,13 +572,24 @@ void executeSentence(std::string columns, std::string tables, std::string condit
     std::filesystem::path path = createFolder("esquemas") + "/" + tables;
     std::cout << "Path: " << path << std::endl;
     std::string types = readDataTypes(path);
+    int typeCount = 0;
+    std::istringstream issTypes(types);
+    std::string type;
+    while(std::getline(issTypes, type, ','))
+    {
+        if(typeCount == positionCondition)
+        {
+            break;
+        }
+        typeCount++;
+    }
 
     while(std::getline(file, columnsLine))
     {
         std::istringstream iss(columnsLine);
         std::string column;
         int count = 0;
-        bool condition = getCondition(conditions, columnsLine, positionCondition);
+        bool condition = getCondition(conditions, columnsLine, positionCondition, type);
         std::string registerLine;
         while(std::getline(iss, column, '#'))
         {
@@ -615,7 +626,7 @@ int getPosition(const std::string& columns, const std::string& column)
     return -1;
 }
 
-bool getCondition(const std::string& condition, const std::string& line, int position)
+bool getCondition(const std::string& condition, const std::string& line, int position, const std::string& type)
 {
     std::string column;
     std::string valor;
@@ -648,44 +659,146 @@ bool getCondition(const std::string& condition, const std::string& line, int pos
         {
             if(conditionType == "==")
             {
-                if(columnLine == valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) == std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) == std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine == valor)
+                    {
+                        return true;
+                    }
                 }
             }
             if(conditionType == "<")
             {
-                if(columnLine < valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) < std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) < std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine < valor)
+                    {
+                        return true;
+                    }
                 }
             }
             if(conditionType == ">")
             {
-                if(columnLine > valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) > std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) > std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine > valor)
+                    {
+                        return true;
+                    }
                 }
             }
             if(conditionType == "<=")
             {
-                if(columnLine <= valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) <= std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) <= std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine <= valor)
+                    {
+                        return true;
+                    }
                 }
             }
             if(conditionType == ">=")
             {
-                if(columnLine >= valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) >= std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) >= std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine >= valor)
+                    {
+                        return true;
+                    }
                 }
             }
             if(conditionType == "!=")
             {
-                if(columnLine != valor)
+                if(type == "int")
                 {
-                    return true;
+                    if(std::stoi(columnLine) != std::stoi(valor))
+                    {
+                        return true;
+                    }
+                }
+                else if(type == "float")
+                {
+                    if(std::stof(columnLine) != std::stof(valor))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if(columnLine != valor)
+                    {
+                        return true;
+                    }
                 }
             }
         }
