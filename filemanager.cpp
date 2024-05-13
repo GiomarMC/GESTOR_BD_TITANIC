@@ -48,9 +48,46 @@ void listFiles(diskManager& disco,std::string path, std::string extension)
     } while (option != 0);
 }
 
-void Menu()
+void diskCreation()
 {
-    diskManager disco;
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << "Desea utilizar el disco por defecto o personalizado" << std::endl;
+    std::cout << "1. Disco por defecto" << std::endl;
+    std::cout << "2. Disco personalizado" << std::endl;
+    std::cout << "--------------------------------" << std::endl;
+    std::cout << "Opcion >> ";
+    int option;
+    std::cin >> option;
+    if(option == 1)
+    {
+        diskManager disco;
+        Menu(disco);
+    }
+    else if(option == 2)
+    {
+        int platos;
+        int sectores;
+        int pistas;
+        int sectorBytes;
+        std::cout << "Ingrese el numero de platos >> ";
+        std::cin >> platos;
+        std::cout << "Ingrese el numero de sectores >> ";
+        std::cin >> sectores;
+        std::cout << "Ingrese el numero de pistas >> ";
+        std::cin >> pistas;
+        std::cout << "Ingrese el numero de bytes por sector >> ";
+        std::cin >> sectorBytes;
+        diskManager disco(platos, sectores, pistas, sectorBytes);
+        Menu(disco);
+    }
+    else
+    {
+        std::cerr << "Opcion invalida, ingrese la opcion nuevamente" << std::endl;
+    }
+}
+
+void Menu(diskManager& disco)
+{
     disco.createDirectory();
     int primaryOption;
     std::cout << "Bienvenido a Megatron 3000" << std::endl;
@@ -154,6 +191,7 @@ std::string createFolder(const std::string foldername)
 void readAndSaveCSV(const std::string& filename)
 {
     std::filesystem::path path = createFolder("esquemas");
+    std::filesystem::path pathData = "Disco/Platos/Sectores";
     std::string newfile = filename;
     newfile.replace(newfile.find(".csv"), 4, ".txt");
     path += "/" + newfile;

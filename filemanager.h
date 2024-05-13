@@ -12,7 +12,8 @@
 const int MAXFILES = 100;
 
 void listFiles(diskManager&,std::string, std::string);
-void Menu();
+void diskCreation();
+void Menu(diskManager&);
 void MenuLeerArchivo(diskManager&);
 std::string createFolder(const std::string);
 void readAndSaveCSV(const std::string&);

@@ -11,6 +11,17 @@ diskManager::diskManager()
     this->tamanioTotal = 8LL * 16384 * 128 * 4096;
 }
 
+diskManager::diskManager(int platos, int sectores, int pistas, int sectorBytes)
+{
+    this->platos = platos;
+    this->sectores = sectores;
+    this->pistas = pistas;
+    this->sectorBytes = sectorBytes;
+    espacioOcupado = 0;
+
+    this->tamanioTotal = platos * sectores * pistas * sectorBytes;
+}
+
 void diskManager::createDirectory()
 {
     std::filesystem::create_directory("Disco");

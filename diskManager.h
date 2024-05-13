@@ -17,6 +17,7 @@ class diskManager
         unsigned long espacioOcupado;
     public:
         diskManager();
+        diskManager(int, int, int, int);
         void createDirectory();
         unsigned long getEspacio();
         void agregarEspacio(size_t);

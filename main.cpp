@@ -7,6 +7,6 @@
 
 int main()
 {
-    Menu();
+    diskCreation();
     return 0;
 }
