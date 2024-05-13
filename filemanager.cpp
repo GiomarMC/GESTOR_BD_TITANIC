@@ -1,6 +1,6 @@
 #include "filemanager.h"
 
-void listFiles(Disco& disco,std::string path, std::string extension)
+void listFiles(diskManager& disco,std::string path, std::string extension)
 {
     std::cout << "Archivos encontrados: " << std::endl;
     std::filesystem::path files[MAXFILES];
@@ -50,7 +50,7 @@ void listFiles(Disco& disco,std::string path, std::string extension)
 
 void Menu()
 {
-    Disco disco;
+    diskManager disco;
     int primaryOption;
     std::cout << "Bienvenido a Megatron 3000" << std::endl;
     do
@@ -92,7 +92,7 @@ void Menu()
     } while (primaryOption != 0);
 }
 
-void MenuLeerArchivo(Disco& disco)
+void MenuLeerArchivo(diskManager& disco)
 {
     int option;
     do
@@ -196,7 +196,7 @@ void readAndSaveCSV(const std::string& filename)
     std::cout << "Archivo guardado exitosamente" << std::endl;
 }
 
-void addDataInDisk(Disco& disco,std::string filename)
+void addDataInDisk(diskManager& disco,std::string filename)
 {
     std::ifstream csvFile(filename);
     std::string newfile = filename;
@@ -270,7 +270,6 @@ void addDataInDisk(Disco& disco,std::string filename)
             }
             index++;
         }
-        std::cout << "Espacio ocupado: " << dataSize << " bytes" << std::endl;
         disco.agregarEspacio(dataSize);
         txtFile << '\n';
         count++;
@@ -467,12 +466,12 @@ void showColumns(const std::string& filename)
     std::cout << "Relacion creada exitosamente" << std::endl;
 }
 
-void createRelation(Disco& disco)
+void createRelation(diskManager& disco)
 {
     listFiles(disco, "user/data/esquemas", ".txt");
 }
 
-void diskSpace(Disco& disco)
+void diskSpace(diskManager& disco)
 {
     std::cout << "Espacio ocupado: " << disco.getEspacio() << " bytes" << std::endl;
     std::cout << "Espacio disponible: " << disco.obtenerEspacioRestante() << " bytes" << std::endl;

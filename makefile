@@ -1,15 +1,15 @@
-programa: main.o filemanager.o disco.o
-	g++ -o programa main.o filemanager.o disco.o
+programa: main.o filemanager.o diskManager.o
+	g++ -o programa main.o filemanager.o diskManager.o
 	./programa
 
 main.o: main.cpp filemanager.h
 	g++ -c main.cpp
 
-filemanager.o: filemanager.cpp filemanager.h disco.h
+filemanager.o: filemanager.cpp filemanager.h diskManager.h
 	g++ -c filemanager.cpp
 
-disco.o: disco.cpp disco.h
-	g++ -c disco.cpp
+diskManager.o: diskManager.cpp diskManager.h
+	g++ -c diskManager.cpp
 
 clean:
 	rm -f *.o programa
