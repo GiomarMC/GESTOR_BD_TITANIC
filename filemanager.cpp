@@ -569,15 +569,21 @@ void executeSentence(std::string columns, std::string tables, std::string condit
     std::cout << "Condicion encontrada en la posicion " << positionCondition << std::endl;
     std::ofstream fileResult(filename);
 
+    std::filesystem::path path = createFolder("esquemas") + "/" + tables;
+    std::cout << "Path: " << path << std::endl;
+    std::string types = readDataTypes(path);
+    std::cout << "Tipos de datos: " << types << std::endl;
+
     while(std::getline(file, columnsLine))
     {
         std::istringstream iss(columnsLine);
         std::string column;
         int count = 0;
+        bool condition = getCondition(conditions, columnsLine, positionCondition);
         std::string registerLine;
         while(std::getline(iss, column, '#'))
         {
-            if(positionColumns != -1 && count == positionColumns)
+            if(positionColumns != -1 && count == positionColumns && condition)
             {
                 registerLine = column;
                 fileResult << registerLine << "\n";
@@ -590,6 +596,8 @@ void executeSentence(std::string columns, std::string tables, std::string condit
             count++;
         }
     }
+    file.close();
+    fileResult.close();
 }
 
 int getPosition(const std::string& columns, const std::string& column)
@@ -606,4 +614,83 @@ int getPosition(const std::string& columns, const std::string& column)
         count++;
     }
     return -1;
+}
+
+bool getCondition(const std::string& condition, const std::string& line, int position)
+{
+    std::string column;
+    std::string valor;
+    std::string conditionType;
+    std::string word;
+    std::istringstream iss(condition);
+    int count = 0;
+    while(std::getline(iss, word, ' '))
+    {
+        if(count == 0)
+        {
+            column = word;
+        }
+        else if(count == 1)
+        {
+            conditionType = word;
+        }
+        else if(count == 2)
+        {
+            valor = word;
+        }
+        count++;
+    }
+    std::istringstream issLine(line);
+    std::string columnLine;
+    int countLine = 0;
+    while(std::getline(issLine, columnLine, '#'))
+    {
+        if(countLine == position)
+        {
+            if(conditionType == "==")
+            {
+                if(columnLine == valor)
+                {
+                    return true;
+                }
+            }
+            if(conditionType == "<")
+            {
+                if(columnLine < valor)
+                {
+                    return true;
+                }
+            }
+            if(conditionType == ">")
+            {
+                if(columnLine > valor)
+                {
+                    return true;
+                }
+            }
+            if(conditionType == "<=")
+            {
+                if(columnLine <= valor)
+                {
+                    return true;
+                }
+            }
+            if(conditionType == ">=")
+            {
+                if(columnLine >= valor)
+                {
+                    return true;
+                }
+            }
+            if(conditionType == "!=")
+            {
+                if(columnLine != valor)
+                {
+                    return true;
+                }
+            }
+        }
+        countLine++;
+    }
+    return false;
 }
