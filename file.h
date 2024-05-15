@@ -13,6 +13,7 @@ class File
         std::string typeHead;
     public:
         File();
+        void readfile(std::string filename);
 };
 
 #endif
