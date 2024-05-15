@@ -4,6 +4,7 @@
 #include <sstream>
 #include <filesystem>
 #include "filemanager.h"
+#include "file.h"
 
 int main()
 {
