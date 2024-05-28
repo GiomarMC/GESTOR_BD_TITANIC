@@ -3,7 +3,7 @@
 void listFiles(diskManager& disco,std::string path, std::string extension)
 {
     std::cout << "Archivos encontrados: " << std::endl;
-    std::filesystem::path files[MAXFILES];
+    std::filesystem::path files[MAXFILES];  
     int filecount = 0;
     std::cout << "Seleccione un archivo " << extension << " para cargar o 0 para salir " << std::endl;
     std::cout << "0. Salir" << std::endl;
